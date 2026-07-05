@@ -56,16 +56,16 @@ router.post('/login', async (req, res) => {
 
 // Admin Registration (One time setup utility or hidden route)
 router.post('/admin/setup', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   try {
-    const adminExists = await Admin.findOne({ username });
+    const adminExists = await Admin.findOne({ email });
     if (adminExists) {
       return res.status(400).json({ message: 'Admin already exists' });
     }
-    const admin = await Admin.create({ username, password });
+    const admin = await Admin.create({ email, password });
     res.status(201).json({
       _id: admin._id,
-      username: admin.username,
+      email: admin.email,
       token: generateToken(admin._id, 'admin'),
     });
   } catch (error) {
@@ -75,13 +75,13 @@ router.post('/admin/setup', async (req, res) => {
 
 // Admin Login
 router.post('/admin/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   try {
-    const admin = await Admin.findOne({ username });
+    const admin = await Admin.findOne({ email });
     if (admin && (await admin.matchPassword(password))) {
       res.json({
         _id: admin._id,
-        username: admin.username,
+        email: admin.email,
         token: generateToken(admin._id, 'admin'),
       });
     } else {
